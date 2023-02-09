@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	tester "github.com/Xameleonnn/grpctester"
 	"google.golang.org/grpc"
@@ -9,23 +10,11 @@ import (
 	"time"
 )
 
-const (
-	host = "172.17.0.1:5300"
-)
-
-func newClient(addr string) (client tester.HandshakerClient, err error) {
-	//resolver.SetDefaultScheme("dns")
-	connection, err := grpc.Dial(addr, grpc.WithInsecure())
-	if err != nil {
-		return nil, err
-	}
-
-	client = tester.NewHandshakerClient(connection)
-	return
-}
-
 func main() {
-	client, err := newClient(host)
+	var addr = flag.String("serveraddr", "172.17.0.1:5300", "where to bang to")
+	flag.Parse()
+	fmt.Printf("Addr - %s\n", *addr)
+	client, err := newClient(*addr)
 	if err != nil {
 		log.Fatalf("Couldnt make client, error - %v", err)
 	}
@@ -54,4 +43,15 @@ func main() {
 
 		time.Sleep(1 * time.Second)
 	}
+}
+
+func newClient(addr string) (client tester.HandshakerClient, err error) {
+	//resolver.SetDefaultScheme("dns")
+	connection, err := grpc.Dial(addr, grpc.WithInsecure())
+	if err != nil {
+		return nil, err
+	}
+
+	client = tester.NewHandshakerClient(connection)
+	return
 }
