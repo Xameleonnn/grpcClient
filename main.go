@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	var addr = flag.String("serveraddr", "172.17.0.1:5300", "where to bang to")
+	var addr = flag.String("serveraddr", ":5300", "where to bang to")
 	flag.Parse()
 	fmt.Printf("Addr - %s\n", *addr)
 	client, err := newClient(*addr)
@@ -31,7 +31,7 @@ func main() {
 		ctx, cancel := context.WithDeadline(context.Background(), deadline)
 		resp, errHandshake := client.Handshake(ctx, &grpcReq)
 		cancel()
-		if errHandshake.Error() == "rpc error: code = DeadlineExceeded desc = context deadline exceeded" {
+		if errHandshake != nil && errHandshake.Error() == "rpc error: code = DeadlineExceeded desc = context deadline exceeded" {
 			fmt.Printf("deadline exceeded, iteration#%d\n", i)
 			continue
 		} else if errHandshake != nil {

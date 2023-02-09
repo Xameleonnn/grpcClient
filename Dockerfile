@@ -4,6 +4,6 @@ ADD . /go/src/github.com/Xameleonnn/grpcClient
 
 RUN go install github.com/Xameleonnn/grpcClient@master
 
-ENTRYPOINT ["/go/bin/grpcClient"]
+ENTRYPOINT ["/go/bin/grpcClient", "-serveraddr"]
 
 EXPOSE 5300
