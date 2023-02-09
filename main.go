@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	var addr = flag.String("serveraddr", ":5300", "where to bang to")
+	var addr = flag.String("serveraddr", "wyf:5300", "where to bang to")
 	flag.Parse()
 	fmt.Printf("Addr - %s\n", *addr)
 	client, err := newClient(*addr)
