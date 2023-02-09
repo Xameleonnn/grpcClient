@@ -25,7 +25,6 @@ func newClient(addr string) (client tester.HandshakerClient, err error) {
 }
 
 func main() {
-	ctx := context.Background()
 	client, err := newClient(host)
 	if err != nil {
 		log.Fatalf("Couldnt make client, error - %v", err)
@@ -35,16 +34,19 @@ func main() {
 	grpcReq := tester.HandshakeReq{
 		HelloOut: "from client",
 	}
-
+	i := 0
 	for {
+		i++
 		start := time.Now()
-		//deadline := start.Add(3 * time.Second)
-		//cancel := func() { log.Fatal("Deadline exceeded") }
-		//ctx, cancel = context.WithDeadline(context.Background(), deadline)
-		//defer cancel()
+		deadline := start.Add(3 * time.Second)
+		ctx, cancel := context.WithDeadline(context.Background(), deadline)
 		resp, errHandshake := client.Handshake(ctx, &grpcReq)
-		if errHandshake != nil {
-			log.Fatalf("Couldnt make handshake, error - %v", err)
+		cancel()
+		if errHandshake.Error() == "rpc error: code = DeadlineExceeded desc = context deadline exceeded" {
+			fmt.Printf("deadline exceeded, iteration#%d\n", i)
+			continue
+		} else if errHandshake != nil {
+			log.Fatalf("Couldnt make handshake, error - %v", errHandshake)
 		}
 
 		fmt.Printf("request sent, time elapsed - %d\n", time.Since(start))
